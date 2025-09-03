@@ -169,6 +169,12 @@
             </a>
         </div>
     </div>
-</body>
 
+    <script>
+      // Apenas controle para verificar se já respondeu
+      if (localStorage.getItem("feedbackRespondido") === "true") {
+        console.log("Usuário já respondeu o feedback.");
+      }
+    </script>
+</body>
 </html>

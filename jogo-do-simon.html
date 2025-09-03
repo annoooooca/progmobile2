@@ -303,6 +303,11 @@
             emAndamento = false;
             placar.innerText = `Fim de Jogo! Nível: ${nivel - 1}`;
             btnIniciar.disabled = false;
+ 
+        if (!localStorage.getItem("feedbackRespondido")) {
+    localStorage.setItem("feedbackRespondido", "true");
+    window.location.href = "https://forms.gle/NWZF6yYNin5kk8kc6";
+}
         }
 
         btnIniciar.addEventListener('click', iniciarJogo);

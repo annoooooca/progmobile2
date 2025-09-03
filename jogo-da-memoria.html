@@ -671,6 +671,12 @@
             
             document.getElementById('fim-de-jogo').getElementsByTagName('h2')[0].innerText = "Fim de Jogo";
             mensagemFinal.innerText = mensagem;
+            // Marca para mostrar feedback no index
+
+            if (!localStorage.getItem("feedbackRespondido")) {
+    localStorage.setItem("feedbackRespondido", "true");
+    window.location.href = "https://docs.google.com/forms/d/e/SEU_FORM_ID/viewform";
+}
             fimDeJogoDiv.style.display = 'flex';
         }
     </script>
