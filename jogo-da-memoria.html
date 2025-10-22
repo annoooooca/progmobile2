@@ -1,684 +1,203 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Memória</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Open Sans', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-color: #f0f0f0; /* Nova cor de fundo principal */
-            color: #333; /* Cor de texto mais escura para contraste */
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        /* Estilo para todos os botões e itens clicáveis */
-        .btn, .menu-item.clickable {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .btn:hover, .menu-item.clickable:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .back-button, .exit-button {
-            padding: 10px 20px;
-            background-color: #b0b0b0; /* Tom de cinza escuro */
-            color: #fff;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: none;
-        }
-
-        .back-button:hover, .exit-button:hover {
-            background-color: #a0a0a0;
-        }
-        
-        .exit-button {
-            margin-right: 10px;
-        }
-
-        .back-button-top {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-
-        @media (max-width: 480px) {
-            .back-button, .exit-button {
-                padding: 8px 15px;
-                font-size: 0.9em;
-            }
-        }
-
-        h1 {
-            font-family: 'Montserrat', sans-serif;
-            color: #555; /* Tom de cinza escuro para o título */
-            font-size: 3em;
-            margin-bottom: 20px;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        #menu, #jogo {
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .menu-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px; /* Aumentado para um visual mais moderno */
-            margin: 15px 0;
-            font-size: 1.1em;
-            cursor: default;
-            border: none;
-            border-radius: 12px; /* Bordas mais arredondadas */
-            background-color: #e0e0e0; /* Fundo do item de menu mais escuro */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .menu-item .label {
-            font-weight: 500;
-            color: #777;
-        }
-        
-        .menu-item .value {
-            font-weight: bold;
-            color: #444;
-            flex-grow: 1;
-            margin: 0 10px;
-        }
-
-        .menu-item .arrow-btn {
-            background-color: #999; /* Tom de cinza para as setas */
-            border: none;
-            color: #fff;
-            font-size: 1.2em;
-            padding: 8px 16px; /* Aumentado para melhor toque */
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .menu-item .arrow-btn:hover {
-            background-color: #777;
-            transform: translateY(-1px);
-        }
-
-        #iniciar-jogo {
-            font-family: 'Montserrat', sans-serif; /* Mesma fonte do título */
-            font-weight: 700;
-            text-transform: uppercase;
-            width: 100%;
-            padding: 20px; /* Mais preenchimento para parecer maior */
-            margin-top: 30px;
-            font-size: 1.3em;
-            cursor: pointer;
-            border: none;
-            border-radius: 12px;
-            background-color: #007bff; /* Cor de destaque moderna e vibrante */
-            color: #fff;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        #iniciar-jogo:hover {
-            background-color: #0056b3;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-        }
-        
-        #game-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            margin-top: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #555;
-        }
-
-        #game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 500px;
-            margin-bottom: 20px;
-            flex-wrap: wrap; /* Para lidar com telas menores */
-            gap: 10px;
-        }
-        
-        #placar-e-tempo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        #placar, #cronometro {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #555;
-            white-space: nowrap; /* Evita quebra de linha */
-        }
-        
-        #turno-jogador {
-            font-style: italic;
-            color: #888;
-        }
-
-        .card-grid {
-            display: grid;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .card {
-            background-color: #555; /* Cor da parte de trás das cartas */
-            border-radius: 10px;
-            cursor: pointer;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.5s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .card.virada {
-            transform: rotateY(180deg);
-        }
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .card-back {
-            background-color: #555;
-            border-radius: 10px;
-        }
-        .card-front {
-            transform: rotateY(180deg);
-            border-radius: 10px;
-        }
-        .card-symbol {
-            font-size: 2.2em;
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Estilos de cores para daltônicos (mantidos) */
-        .cor-0 { background-color: #ff0000; }
-        .cor-1 { background-color: #00ff00; }
-        .cor-2 { background-color: #0000ff; }
-        .cor-3 { background-color: #ffff00; }
-        .cor-4 { background-color: #800080; }
-        .cor-5 { background-color: #00ffff; }
-        .cor-6 { background-color: #ffa500; }
-        .cor-7 { background-color: #ff00ff; }
-        .cor-8 { background-color: #c0c0c0; }
-        .cor-9 { background-color: #800000; }
-        .cor-10 { background-color: #808000; }
-        .cor-11 { background-color: #008000; }
-        .cor-12 { background-color: #008080; }
-        .cor-13 { background-color: #000080; }
-        .cor-14 { background-color: #808080; }
-        .cor-15 { background-color: #ff4500; }
-        .cor-16 { background-color: #4b0082; }
-        .cor-17 { background-color: #f5f5dc; }
-        
-        .protanopia .cor-0 { background-color: #f06464; }
-        .protanopia .cor-1 { background-color: #64f064; }
-        .protanopia .cor-2 { background-color: #6464f0; }
-        .protanopia .cor-3 { background-color: #f0f064; }
-        .protanopia .cor-4 { background-color: #960096; }
-        .protanopia .cor-5 { background-color: #64f0f0; }
-        .protanopia .cor-6 { background-color: #f0aa00; }
-        .protanopia .cor-7 { background-color: #f000f0; }
-        .protanopia .cor-8 { background-color: #b0b0b0; }
-        .protanopia .cor-9 { background-color: #700000; }
-        .protanopia .cor-10 { background-color: #707000; }
-        .protanopia .cor-11 { background-color: #007000; }
-        .protanopia .cor-12 { background-color: #007070; }
-        .protanopia .cor-13 { background-color: #000070; }
-        .protanopia .cor-14 { background-color: #707070; }
-        .protanopia .cor-15 { background-color: #f04000; }
-        .protanopia .cor-16 { background-color: #3b0072; }
-        .protanopia .cor-17 { background-color: #e5e5c0; }
-        
-        .deuteranopia .cor-0 { background-color: #f06464; }
-        .deuteranopia .cor-1 { background-color: #64f064; }
-        .deuteranopia .cor-2 { background-color: #6464f0; }
-        .deuteranopia .cor-3 { background-color: #f0f064; }
-        .deuteranopia .cor-4 { background-color: #960096; }
-        .deuteranopia .cor-5 { background-color: #64f0f0; }
-        .deuteranopia .cor-6 { background-color: #f0aa00; }
-        .deuteranopia .cor-7 { background-color: #f000f0; }
-        .deuteranopia .cor-8 { background-color: #b0b0b0; }
-        .deuteranopia .cor-9 { background-color: #700000; }
-        .deuteranopia .cor-10 { background-color: #707000; }
-        .deuteranopia .cor-11 { background-color: #007000; }
-        .deuteranopia .cor-12 { background-color: #007070; }
-        .deuteranopia .cor-13 { background-color: #000070; }
-        .deuteranopia .cor-14 { background-color: #707070; }
-        .deuteranopia .cor-15 { background-color: #f04000; }
-        .deuteranopia .cor-16 { background-color: #3b0072; }
-        .deuteranopia .cor-17 { background-color: #e5e5c0; }
-        
-        .tritanopia .cor-0 { background-color: #f06464; }
-        .tritanopia .cor-1 { background-color: #64f064; }
-        .tritanopia .cor-2 { background-color: #6464f0; }
-        .tritanopia .cor-3 { background-color: #f0f064; }
-        .tritanopia .cor-4 { background-color: #960096; }
-        .tritanopia .cor-5 { background-color: #64f0f0; }
-        .tritanopia .cor-6 { background-color: #f0aa00; }
-        .tritanopia .cor-7 { background-color: #f000f0; }
-        .tritanopia .cor-8 { background-color: #b0b0b0; }
-        .tritanopia .cor-9 { background-color: #700000; }
-        .tritanopia .cor-10 { background-color: #707000; }
-        .tritanopia .cor-11 { background-color: #007000; }
-        .tritanopia .cor-12 { background-color: #007070; }
-        .tritanopia .cor-13 { background-color: #000070; }
-        .tritanopia .cor-14 { background-color: #707070; }
-        .tritanopia .cor-15 { background-color: #f04000; }
-        .tritanopia .cor-16 { background-color: #3b0072; }
-        .tritanopia .cor-17 { background-color: #e5e5c0; }
-
-        .symbol-dalt .cor-0 { color: #f06464; }
-        .symbol-dalt .cor-1 { color: #64f064; }
-        .symbol-dalt .cor-2 { color: #6464f0; }
-        .symbol-dalt .cor-3 { color: #f0f064; }
-        .symbol-dalt .cor-4 { color: #960096; }
-        .symbol-dalt .cor-5 { color: #64f0f0; }
-        .symbol-dalt .cor-6 { color: #f0aa00; }
-        .symbol-dalt .cor-7 { color: #f000f0; }
-        
-        #fim-de-jogo {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-            display: none;
-        }
-        #fim-de-jogo h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 3em;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        #fim-de-jogo p {
-            color: #fff;
-            font-size: 1.5em;
-        }
-
-        #voltar-menu {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 20px;
-            font-size: 1.3em;
-            cursor: pointer;
-            border: none;
-            border-radius: 12px;
-            background-color: #007bff;
-            color: #fff;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-        
-        #voltar-menu:hover {
-            background-color: #0056b3;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogo da Memória</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f0f4f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+    }
+    h1 {
+        color: #1E3A8A;
+    }
+    #tabuleiro {
+        display: grid;
+        grid-template-columns: repeat(4, 100px);
+        gap: 10px;
+        margin-top: 20px;
+    }
+    .carta {
+        width: 100px;
+        height: 100px;
+        background: #007bff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 2rem;
+        cursor: pointer;
+        border-radius: 10px;
+        user-select: none;
+        transition: transform 0.3s;
+    }
+    .carta.virada {
+        background: #fff;
+        color: #007bff;
+        transform: rotateY(180deg);
+    }
+    #ranking {
+        display:none; 
+        position: fixed; 
+        top:0; 
+        left:0; 
+        width:100%; 
+        height:100%; 
+        background: rgba(0,0,0,0.7); 
+        color:#fff; 
+        justify-content:center; 
+        align-items:center; 
+        flex-direction:column; 
+        padding:20px; 
+        overflow:auto;
+    }
+    #ranking button {
+        margin-top:20px; 
+        padding:10px 20px; 
+        border:none; 
+        border-radius:8px; 
+        background-color:#007bff; 
+        color:white; 
+        font-weight:bold; 
+        cursor:pointer;
+    }
+</style>
 </head>
 <body>
-    <div id="menu">
-        <a href="index.html" class="back-button btn back-button-top">Voltar ao Menu</a>
-        <h1>Jogo da Memória</h1>
-        <div class="menu-item clickable" onclick="alternarModoDeJogo()">
-            <span class="label">Jogadores:</span>
-            <span class="value" id="modo-de-jogo">Um Jogador</span>
-        </div>
-        <div class="menu-item">
-            <span class="label">Nível:</span> 
-            <button class="arrow-btn btn" onclick="mudarDificuldade(-1)">&lt;</button>
-            <span class="value" id="nivel">Fácil (4x4)</span>
-            <button class="arrow-btn btn" onclick="mudarDificuldade(1)">&gt;</button>
-        </div>
-        <div class="menu-item">
-            <span class="label">Cores:</span> 
-            <button class="arrow-btn btn" onclick="mudarModoDaltonismo(-1)">&lt;</button>
-            <span class="value" id="modo-daltonismo">Normal</span>
-            <button class="arrow-btn btn" onclick="mudarModoDaltonismo(1)">&gt;</button>
-        </div>
-        <div class="menu-item clickable" onclick="alternarModoSimbolos()">
-            <span class="label">Modo:</span> 
-            <span class="value" id="modo-simbolos">Cores</span>
-        </div>
-        <button id="iniciar-jogo" class="btn" onclick="iniciarJogo()">INICIAR</button>
-    </div>
 
-    <div id="jogo" style="display:none;">
-        <div id="game-header">
-            <a href="index.html" class="exit-button btn">Sair</a>
-            <div id="placar-e-tempo">
-                <span id="placar">Pares Encontrados: 0</span>
-                <span id="cronometro">Tempo: 00:00</span>
-            </div>
-        </div>
-        <div id="game-info">
-            <span id="turno-jogador"></span>
-            <span id="placar-jogadores"></span>
-        </div>
-        <div class="card-grid" id="card-grid"></div>
-    </div>
+<h1>Jogo da Memória</h1>
+<div id="tabuleiro"></div>
 
-    <div id="fim-de-jogo">
-        <h2>Fim de Jogo</h2>
-        <p id="mensagem-final"></p>
-        <a href="index.html" id="voltar-menu" class="btn">Voltar ao Menu</a>
-    </div>
+<div id="ranking">
+    <h2>Ranking Global</h2>
+    <ol id="lista-ranking"></ol>
+    <button onclick="document.getElementById('ranking').style.display='none'">Fechar</button>
+</div>
 
-    <script>
-        const cardGrid = document.getElementById('card-grid');
-        const placarJogadores = document.getElementById('placar-jogadores');
-        const turnoJogador = document.getElementById('turno-jogador');
-        const placarUnico = document.getElementById('placar');
-        const fimDeJogoDiv = document.getElementById('fim-de-jogo');
-        const mensagemFinal = document.getElementById('mensagem-final');
-        const menuDiv = document.getElementById('menu');
-        const jogoDiv = document.getElementById('jogo');
-        const cronometroElement = document.getElementById('cronometro');
-        const exitGameBtn = document.getElementById('exit-game-btn');
-        const backToMenuBtn = document.querySelector('.back-button');
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
 
-        let timer;
-        let segundos = 0;
+// Configuração Firebase (substitua pelos seus dados)
+const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_ID",
+    appId: "SEU_APP_ID"
+};
 
-        const niveis = {
-            1: { nome: 'Fácil (4x4)', cols: 4, rows: 4 },
-            2: { nome: 'Médio (4x5)', cols: 4, rows: 5 },
-            3: { nome: 'Difícil (5x6)', cols: 5, rows: 6 },
-            4: { nome: 'Muito Difícil (6x6)', cols: 6, rows: 6 }
-        };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-        const paletas = {
-            'Normal': ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#800080', '#00ffff', '#ffa500', '#ff00ff',
-                       '#c0c0c0', '#800000', '#808000', '#008000', '#008080', '#000080', '#808080', '#ff4500',
-                       '#4b0082', '#f5f5dc'],
-            'Protanopia': ['#f06464', '#64f064', '#6464f0', '#f0f064', '#960096', '#64f0f0', '#f0aa00', '#f000f0',
-                            '#b0b0b0', '#700000', '#707000', '#007000', '#007070', '#000070', '#707070', '#f04000',
-                            '#3b0072', '#e5e5c0'],
-            'Deuteranopia': ['#f06464', '#64f064', '#6464f0', '#f0f064', '#960096', '#64f0f0', '#f0aa00', '#f000f0',
-                              '#b0b0b0', '#700000', '#707000', '#007000', '#007070', '#000070', '#707070', '#f04000',
-                              '#3b0072', '#e5e5c0'],
-            'Tritanopia': ['#f06464', '#64f064', '#6464f0', '#f0f064', '#960096', '#64f0f0', '#f0aa00', '#f000f0',
-                            '#b0b0b0', '#700000', '#707000', '#007000', '#007070', '#000070', '#707070', '#f04000',
-                            '#3b0072', '#e5e5c0']
-        };
-
-        const simbolos = ['★', '♥', '♦', '♠', '♣', '♦', '▲', '●', '■', '◎', '◈', '◇', '⌘', '⌫', '⌥', '⎋', '⍟', '⚙'];
-
-        let cartas = [];
-        let cartasViradas = [];
-        let paresEncontrados = 0;
-        let nivelAtual = 1;
-        let modoDaltonismo = 'Normal';
-        let modoSimbolos = false;
-        let modoDeJogo = 'um_jogador';
-        let jogadorAtual = 1;
-        let pontuacao = { 1: 0, 2: 0 };
-
-        function mudarDificuldade(direcao) {
-            nivelAtual = Math.min(Math.max(1, nivelAtual + direcao), 4);
-            document.getElementById('nivel').innerText = niveis[nivelAtual].nome;
-        }
-
-        function mudarModoDaltonismo(direcao) {
-            const modos = Object.keys(paletas);
-            let index = modos.indexOf(modoDaltonismo);
-            index = (index + direcao + modos.length) % modos.length;
-            modoDaltonismo = modos[index];
-            document.getElementById('modo-daltonismo').innerText = modoDaltonismo;
-        }
-        
-        function alternarModoDeJogo() {
-            modoDeJogo = modoDeJogo === 'um_jogador' ? 'dois_jogadores' : 'um_jogador';
-            document.getElementById('modo-de-jogo').innerText = modoDeJogo === 'um_jogador' ? 'Um Jogador' : 'Dois Jogadores';
-        }
-
-        function alternarModoSimbolos() {
-            modoSimbolos = !modoSimbolos;
-            document.getElementById('modo-simbolos').innerText = modoSimbolos ? 'Símbolos' : 'Cores';
-        }
-
-        function iniciarCronometro() {
-            segundos = 0;
-            cronometroElement.innerText = 'Tempo: 00:00';
-            timer = setInterval(() => {
-                segundos++;
-                let minutos = Math.floor(segundos / 60);
-                let segundosRestantes = segundos % 60;
-                cronometroElement.innerText = `Tempo: ${minutos.toString().padStart(2, '0')}:${segundosRestantes.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        function pararCronometro() {
-            clearInterval(timer);
-        }
-
-        function iniciarJogo() {
-            menuDiv.style.display = 'none';
-            jogoDiv.style.display = 'block';
-            
-            if (modoDeJogo === 'dois_jogadores') {
-                placarUnico.style.display = 'none';
-                placarJogadores.style.display = 'block';
-                turnoJogador.style.display = 'block';
-                cronometroElement.style.display = 'none'; // Cronômetro desativado para 2 jogadores
-                jogadorAtual = 1;
-                pontuacao = { 1: 0, 2: 0 };
-                atualizarPlacar();
-                atualizarTurno();
-            } else {
-                placarUnico.style.display = 'block';
-                placarJogadores.style.display = 'none';
-                turnoJogador.style.display = 'none';
-                cronometroElement.style.display = 'block';
-                placarUnico.innerText = `Pares Encontrados: 0`;
-                iniciarCronometro();
-            }
-
-            montarTabuleiro();
-        }
-
-        function atualizarPlacar() {
-            if (modoDeJogo === 'dois_jogadores') {
-                placarJogadores.innerText = `Jogador 1: ${pontuacao[1]} | Jogador 2: ${pontuacao[2]}`;
-            } else {
-                placarUnico.innerText = `Pares Encontrados: ${paresEncontrados}`;
-            }
-        }
-        
-        function atualizarTurno() {
-            if (modoDeJogo === 'dois_jogadores') {
-                turnoJogador.innerText = `Vez do Jogador ${jogadorAtual}`;
-            }
-        }
-
-        function resetarEstadoJogo() {
-            cartas = [];
-            cartasViradas = [];
-            paresEncontrados = 0;
-            cardGrid.innerHTML = '';
-            pararCronometro();
-        }
-
-        function voltarAoMenu() {
-            resetarEstadoJogo();
-            jogoDiv.style.display = 'none';
-            menuDiv.style.display = 'block';
-        }
-
-        function reiniciarJogo() {
-            resetarEstadoJogo();
-            fimDeJogoDiv.style.display = 'none';
-            menuDiv.style.display = 'block';
-        }
-
-        function montarTabuleiro() {
-            const { cols, rows } = niveis[nivelAtual];
-            const numCartas = cols * rows;
-            const numPares = numCartas / 2;
-            
-            let valores = [];
-            if (modoSimbolos) {
-                valores = simbolos.slice(0, numPares);
-            } else {
-                valores = paletas[modoDaltonismo].slice(0, numPares);
-            }
-            
-            let valoresDuplicados = [...valores, ...valores];
-            valoresDuplicados.sort(() => Math.random() - 0.5);
-
-            cardGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            cardGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-            
-            cartas = valoresDuplicados.map((valor) => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.valor = valor;
-                
-                const cardFront = document.createElement('div');
-                cardFront.classList.add('card-face', 'card-front');
-                
-                if (modoSimbolos) {
-                    const cardSymbol = document.createElement('span');
-                    cardSymbol.classList.add('card-symbol');
-                    cardSymbol.innerText = valor;
-                    cardFront.appendChild(cardSymbol);
-                } else {
-                    cardFront.style.backgroundColor = valor;
-                }
-
-                const cardBack = document.createElement('div');
-                cardBack.classList.add('card-face', 'card-back');
-                
-                card.appendChild(cardFront);
-                card.appendChild(cardBack);
-                
-                card.addEventListener('click', () => virarCarta(card));
-                cardGrid.appendChild(card);
-
-                return { elemento: card, valor: valor, encontrada: false };
-            });
-
-            const cardWidth = cardGrid.offsetWidth / cols - 10;
-            cartas.forEach(c => {
-                c.elemento.style.width = `${cardWidth}px`;
-                c.elemento.style.height = `${cardWidth}px`;
-            });
-
-            document.body.className = '';
-            if (!modoSimbolos && modoDaltonismo !== 'Normal') {
-                document.body.classList.add(modoDaltonismo.toLowerCase());
-            }
-        }
-
-        function virarCarta(card) {
-            if (card.classList.contains('virada') || cartasViradas.length === 2) {
-                return;
-            }
-
-            card.classList.add('virada');
-            cartasViradas.push(card);
-
-            if (cartasViradas.length === 2) {
-                setTimeout(checarPar, 1000);
-            }
-        }
-
-        function checarPar() {
-            const [card1, card2] = cartasViradas;
-            
-            if (card1.dataset.valor === card2.dataset.valor) {
-                card1.style.opacity = 0.5;
-                card2.style.opacity = 0.5;
-                card1.style.cursor = 'default';
-                card2.style.cursor = 'default';
-                
-                if (modoDeJogo === 'dois_jogadores') {
-                    pontuacao[jogadorAtual]++;
-                }
-                paresEncontrados++;
-                atualizarPlacar();
-                
-                if (paresEncontrados === cartas.length / 2) {
-                    pararCronometro();
-                    setTimeout(() => anunciarFimDeJogo(), 500);
-                }
-            } else {
-                card1.classList.remove('virada');
-                card2.classList.remove('virada');
-                
-                if (modoDeJogo === 'dois_jogadores') {
-                    jogadorAtual = jogadorAtual === 1 ? 2 : 1;
-                    atualizarTurno();
-                }
-            }
-            
-            cartasViradas = [];
-        }
-
-        function anunciarFimDeJogo() {
-            let mensagem = '';
-            if (modoDeJogo === 'dois_jogadores') {
-                if (pontuacao[1] > pontuacao[2]) {
-                    mensagem = `Parabéns, Jogador 1! Você venceu!`;
-                } else if (pontuacao[2] > pontuacao[1]) {
-                    mensagem = `Parabéns, Jogador 2! Você venceu!`;
-                } else {
-                    mensagem = `O jogo terminou em um empate!`;
-                }
-            } else {
-                let minutos = Math.floor(segundos / 60);
-                let segundosRestantes = segundos % 60;
-                mensagem = `Parabéns! Você completou o jogo em ${minutos.toString().padStart(2, '0')}:${segundosRestantes.toString().padStart(2, '0')}.`;
-            }
-            
-            document.getElementById('fim-de-jogo').getElementsByTagName('h2')[0].innerText = "Fim de Jogo";
-            mensagemFinal.innerText = mensagem;
-            // Marca para mostrar feedback no index
-
-            if (!localStorage.getItem("feedbackRespondido")) {
-    localStorage.setItem("feedbackRespondido", "true");
-    window.location.href = "https://docs.google.com/forms/d/e/SEU_FORM_ID/viewform";
+// --- Funções Firebase ---
+async function salvarRankingFirebase(nome, pontuacao, tempo) {
+    try {
+        await addDoc(collection(db, "rankingMemoria"), {
+            nome: nome,
+            pontuacao: pontuacao,
+            tempo: tempo,
+            data: new Date()
+        });
+        console.log("Ranking salvo!");
+    } catch (e) {
+        console.error("Erro ao salvar ranking: ", e);
+    }
 }
-            fimDeJogoDiv.style.display = 'flex';
+
+async function mostrarRankingFirebase() {
+    const lista = document.getElementById('lista-ranking');
+    lista.innerHTML = '';
+
+    const q = query(collection(db, "rankingMemoria"), orderBy("pontuacao", "desc"), limit(10));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+        const item = doc.data();
+        const li = document.createElement('li');
+        li.textContent = `Nome: ${item.nome}, Pares: ${item.pontuacao}, Tempo: ${item.tempo}`;
+        lista.appendChild(li);
+    });
+
+    document.getElementById('ranking').style.display = 'flex';
+}
+
+// --- Jogo da Memória ---
+const tabuleiro = document.getElementById('tabuleiro');
+let cartas = [];
+let primeiraCarta = null;
+let segundaCarta = null;
+let paresEncontrados = 0;
+let timerInicio = null;
+
+// Criar cartas (8 pares)
+const simbolos = ['🍎','🍌','🍇','🍓','🥝','🍍','🍒','🍉'];
+cartas = [...simbolos, ...simbolos];
+cartas = cartas.sort(() => Math.random() - 0.5);
+
+cartas.forEach((simbolo) => {
+    const div = document.createElement('div');
+    div.classList.add('carta');
+    div.textContent = "";
+    div.dataset.simbolo = simbolo;
+    div.addEventListener('click', virarCarta);
+    tabuleiro.appendChild(div);
+});
+
+function virarCarta() {
+    if(!timerInicio) timerInicio = Date.now();
+    if(this.classList.contains('virada') || segundaCarta) return;
+
+    this.classList.add('virada');
+    this.textContent = this.dataset.simbolo;
+
+    if(!primeiraCarta) {
+        primeiraCarta = this;
+    } else {
+        segundaCarta = this;
+        if(primeiraCarta.dataset.simbolo === segundaCarta.dataset.simbolo){
+            paresEncontrados++;
+            primeiraCarta = null;
+            segundaCarta = null;
+            if(paresEncontrados === simbolos.length){
+                setTimeout(anunciarFimDeJogo, 500);
+            }
+        } else {
+            setTimeout(() => {
+                primeiraCarta.classList.remove('virada');
+                segundaCarta.classList.remove('virada');
+                primeiraCarta.textContent = "";
+                segundaCarta.textContent = "";
+                primeiraCarta = null;
+                segundaCarta = null;
+            }, 800);
         }
-    </script>
+    }
+}
+
+function anunciarFimDeJogo() {
+    const tempoFinal = Math.floor((Date.now() - timerInicio) / 1000);
+    const minutos = Math.floor(tempoFinal / 60).toString().padStart(2,'0');
+    const segundos = (tempoFinal % 60).toString().padStart(2,'0');
+    const tempoFormatado = `${minutos}:${segundos}`;
+
+    const nomeJogador = prompt(`Parabéns! Você encontrou todos os pares.\nDigite seu nome para o ranking:`);
+    if(nomeJogador){
+        salvarRankingFirebase(nomeJogador, paresEncontrados, tempoFormatado).then(() => {
+            mostrarRankingFirebase();
+        });
+    }
+}
+</script>
+
 </body>
 </html>
